@@ -1,0 +1,2 @@
+/usr/local/lib/<%= original_name %>/bin/<%= original_name %> remove_release <%= version %>  <%= prev %>
+

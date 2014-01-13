@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# vim: set ts=4 sts=4 sw=4 et:
+
+set -e
+
+INSTALL_DIR=$(cd ${0%/*} && pwd)
+source ${INSTALL_DIR}/internals/bootstrap.sh
+
+function usage {
+    cat <<EOT
+Generates a target package from a project code base.
+Should be run in the root directory of the project code base.
+The project must provide the following command:
+
+    make target
+       Builds an Erlang target system.
+       $runner assumes that the target files
+       are placed in rel/<project-name>/ directory.
+
+$runner can read rel/<project-name>/build.config if provided.
+build.config is just a set of shell variables.
+Currently supported variables:
+
+    FPM_EXT_OPTS - extra options for fpm
+        Default: ""
+        Example: "-d perl"
+
+    SERVICE_OWNER - a user under which the service will be running
+        Default: <project-name>
+
+    SERVICE_LOG_DIR - path to log directory
+        Default: /var/log/<project-name>
+
+    SERVICE_CONFIG_DIR - path to config directory
+        Default: /etc/<project-name>
+
+    SERVICE_PREFIX - a path prefix of a service files location
+        Default: /usr/local/lib
+
+    VENDOR - vendor field for the rpm package
+        Default: ""
+
+    LICENSE - license field for the rpm package
+        Default: ""
+
+Usage:
+    $runner <project-name>
+
+EOT
+    [ -z "$*" ] || echo "$runner: $*"
+    exit 2
+}
+
+project_dir=`pwd`
+project_name="$1"
+[ -z "${project_name}" ] && usage "Project name unspecified"
+
+epoch=`date +%s`
+localdir=${project_dir}/rel
+platform=`uname -m`
+cookie="${project_name}_cookie"
+
+commit_hash=`git log -n 1 --format="%H"`
+
+function prepare_redhat {
+  redhat=rel/${project_name}/bin/${project_name}.redhat
+  template=${INSTALL_DIR}/rpm/templates/service.redhat
+  if [ -f $redhat ]; then   
+      # already have redhat service file.
+      echo "${project_name}.redhat already exists. Skip generation of ${project_name}.redhat"
+  else
+      cp $template $redhat || abort "Cannot generate $redhat"
+      sed -i -e "s#{{name}}#${project_name}#g" $redhat
+  fi
+}
+
+# Default build params:
+FPM_EXT_OPTS=""
+SERVICE_OWNER=${project_name}
+SERVICE_LOG_DIR="var/log/${project_name}"
+SERVICE_CONFIG_DIR="/etc/${project_name}"
+SERVICE_PREFIX=/usr/local/lib
+VENDOR=""
+LICENSE=""
+
+make target
+build_config="${project_dir}/rel/${project_name}/build.config"
+[ -r "${build_config}" ] && source "${build_config}"
+
+FPMOPTS="-t rpm --vendor=\"${VENDOR}\" --license=\"${LICENSE}\" --epoch=${epoch}"
+EXTDEPS="-d coreutils -d gawk -d grep -d net-tools -d sed -d sudo -d util-linux-ng -d perl"
+
+relvsn=`${INSTALL_DIR}/internals/relvsn.erl ${project_name} ${project_dir} 2>/dev/null || :`
+[ -z "${relvsn}" ] && abort "Release version not found"
+
+sed -i -e "s#${localdir}#${SERVICE_PREFIX}#g" rel/${project_name}/releases/RELEASES
+prepare_redhat
+fpm -s dir ${FPMOPTS} \
+    -n ${project_name} \
+    --description="${project_name} service (${commit_hash})" \
+    -v ${relvsn} \
+    --rpm-user="${SERVICE_OWNER}" \
+    --rpm-group="${SERVICE_OWNER}" \
+    --template-scripts \
+    --template-value="original_name=${project_name}" \
+    --template-value="cookie=${cookie}" \
+    --template-value="owner=${SERVICE_OWNER}" \
+    --template-value="log_dir=${SERVICE_LOG_DIR}" \
+    --template-value="config_dir=${SERVICE_CONFIG_DIR}" \
+    --before-install=${INSTALL_DIR}/rpm/target/PREIN \
+    --after-install=${INSTALL_DIR}/rpm/target/POSTIN \
+    --before-remove=${INSTALL_DIR}/rpm/target/PREUN \
+    --after-remove=${INSTALL_DIR}/rpm/target/POSTUN  \
+    --provides=${project_name} --provides=${project_name}_${relvsn} \
+    ${EXTDEPS} \
+    --prefix=${SERVICE_PREFIX} \
+    ${FPM_EXT_OPTS} \
+    -C rel \
+    ${project_name}

@@ -1,0 +1,1 @@
+/usr/local/lib/<%= original_name %>/bin/<%= original_name %> upgrade <%= original_name %>_<%= version %>

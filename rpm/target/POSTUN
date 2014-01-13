@@ -1,0 +1,9 @@
+if [ $1 -ge 1 ]; then
+    /sbin/service  <%= name %> stop >/dev/null 2>&1 || :
+    sleep 1
+    /sbin/service <%= name %> start >/dev/null 2>&1 || :
+else
+    rm /etc/rc.d/init.d/<%= name %>
+    rm -rf /usr/local/lib/<%= name %>
+fi
+

@@ -1,0 +1,27 @@
+/bin/mv -b /usr/local/lib/<%= name %>/bin/<%= name %>.redhat /etc/rc.d/init.d/<%= name %>
+/bin/chown root:root /etc/rc.d/init.d/<%= name %>
+/bin/chmod 0755 /etc/rc.d/init.d/<%= name %>
+
+if [ $1 = 1 ]; then
+    /sbin/chkconfig --add <%= name %> 
+fi
+
+# logs
+/bin/mkdir -p <%= log_dir %>
+/bin/chmod 0755 <%= log_dir %>
+/bin/chown <%= owner %>:<%= owner %> -R <%= log_dir %>
+
+/bin/chown <%= owner %>:<%= owner %> -R /usr/local/lib/<%= name %>
+echo -n <%= cookie %> >/usr/local/lib/<%= name %>/.erlang.cookie
+/bin/chown <%= owner %>:<%= owner %> /usr/local/lib/<%= name %>/.erlang.cookie
+/bin/chmod 0400 /usr/local/lib/<%= name %>/.erlang.cookie
+
+if [ -n "<%= config_dir %>" ]; then
+    /bin/mkdir -p <%= config_dir %>
+    /bin/cp -n /usr/local/lib/<%= name %>/etc/* <%= config_dir %>/
+fi
+
+
+# Handle upgrading from SysV initscript to native systemd unit.
+# We can tell if a SysV version of <%= name %>  was previously installed by
+# checking to see if the initscript is present.

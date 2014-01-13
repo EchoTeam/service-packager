@@ -1,0 +1,6 @@
+/sbin/service <%= original_name %> ping
+if [ $? -ne 0 ]
+then
+ echo "Node is not running (no ping).. Cannot update"
+ exit 1
+fi
