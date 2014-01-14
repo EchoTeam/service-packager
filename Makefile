@@ -39,8 +39,8 @@ fpm:
 		-t rpm \
 		-a all \
 		-d coreutils -d util-linux-ng -d net-tools \
-		-d grep -d gawk -d sed -d sudo -d pssh -d wget -d rpm -d git \
-		-d perl -d ruby -d python -d python-pip -d erlang \
+		-d grep -d gawk -d sed -d rpm -d git \
+		-d ruby -d erlang \
 		-d libffi-devel -d rpm-build \
 		--before-install=${INSTALL_DIR}/rpm/service-packager/PREIN \
 		--prefix=${prefix} \
