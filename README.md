@@ -1,7 +1,8 @@
-service-packager
-================
+Erlang Service Packager
+=======================
 
 A set of scripts to package Erlang service into RPM.
+RPMs are built with [fpm](https://github.com/jordansissel/fpm).
 
 Compatible with [Erlang service layout](https://github.com/EchoTeam/rebar-templates#creating-erlangotp-service-layout).
 
