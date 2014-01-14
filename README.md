@@ -19,3 +19,10 @@ Run the script without arguments for more information.
 
 Generates a source package from a project code base.
 Run the script without arguments for more information.
+
+## Installation
+
+    git clone git@github.com:EchoTeam/service-packager.git
+    cd service-packager
+    make rpm
+    sudo yum localinstall echo-service-packager.rpm
