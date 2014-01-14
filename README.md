@@ -1,5 +1,5 @@
-service-packager
-================
+Erlang Service Packager
+=======================
 
 A set of scripts to package Erlang service into RPM.
 RPMs are built with [fpm](https://github.com/jordansissel/fpm).
