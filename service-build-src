@@ -10,7 +10,7 @@ function usage {
     cat <<EOT
 Generates a source package from a project code base.
 Should be run in the root directory of the project code base.
-The project must provide the following command:
+The project must provide the following commands:
 
     make target
        Builds an Erlang target system.
