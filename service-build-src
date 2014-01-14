@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# vim: set ts=4 sts=4 sw=4 et:
+
+set -e
+
+INSTALL_DIR=$(cd ${0%/*} && pwd)
+source ${INSTALL_DIR}/internals/bootstrap.sh
+
+function usage {
+    cat <<EOT
+Generates a source package from a project code base.
+Should be run in the root directory of the project code base.
+The project must provide the following command:
+
+    make target
+       Builds an Erlang target system.
+       $runner assumes that the target files
+       are placed in rel/<project-name>/ directory.
+
+    make clean
+        Clean the project code base from binaries.
+
+$runner can read rel/<project-name>/build.config if provided.
+build.config is just a set of shell variables.
+Currently supported variables:
+
+    SERVICE_OWNER - a user under which the service will be running
+        Default: <project-name>
+
+    SERVICE_PREFIX - a path prefix of a service files location
+        Default: /usr/local/lib
+
+    VENDOR - vendor field for the rpm package
+        Default: ""
+
+    LICENSE - license field for the rpm package
+        Default: ""
+
+Usage:
+    $runner <project-name>
+
+EOT
+    [ -z "$*" ] || echo "$runner: $*"
+    exit 2
+}
+
+project_dir=`pwd`
+project_name="$1"
+[ -z "${project_name}" ] && usage "Project name unspecified"
+
+epoch=`date +%s`
+commit_hash=`git log -n 1 --format="%H"`
+
+# Default build params:
+SERVICE_OWNER=${project_name}
+SERVICE_PREFIX=/usr/local/lib
+VENDOR=""
+LICENSE=""
+
+build_config="${project_dir}/rel/${project_name}/build.config"
+if [ -r "${build_config}" ]; then
+    source "${build_config}"
+else
+    make target # make build.config available
+    [ -r "${build_config}" ] && source "${build_config}"
+fi
+
+FPMOPTS="-t rpm --vendor=\"${VENDOR}\" --license=\"${LICENSE}\" --epoch=${epoch}"
+
+relvsn=`${INSTALL_DIR}/internals/relvsn.erl ${project_name} ${project_dir} 2>/dev/null || :`
+[ -z "${relvsn}" ] && abort "Release version not found"
+
+make clean
+
+# We should include .git directory in the rpm
+# since rebar's {vsn, git} use this information
+tar cvf src.tar  --exclude="rel/${project_name}*" --exclude="*.beam" --exclude="*.rpm" .
+fpm -s tar ${FPMOPTS} -n ${project_name}_src -a all \
+    --description="${project_name} service sources ${commit_hash}"\
+    -v ${relvsn} \
+    --rpm-user="${SERVICE_OWNER}" \
+    --rpm-group="${SERVICE_OWNER}" \
+    --prefix=${SERVICE_PREFIX}/src/${project_name}_${relvsn} \
+    src.tar
+rm src.tar    
