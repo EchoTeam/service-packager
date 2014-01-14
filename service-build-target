@@ -88,7 +88,6 @@ make target
 build_config="${project_dir}/rel/${project_name}/build.config"
 [ -r "${build_config}" ] && source "${build_config}"
 
-FPMOPTS="-t rpm --vendor=\"${VENDOR}\" --license=\"${LICENSE}\" --epoch=${epoch}"
 EXTDEPS="-d coreutils -d gawk -d grep -d net-tools -d sed -d sudo -d util-linux-ng -d perl"
 
 relvsn=`${INSTALL_DIR}/internals/relvsn.erl ${project_name} ${project_dir} 2>/dev/null || :`
@@ -96,7 +95,10 @@ relvsn=`${INSTALL_DIR}/internals/relvsn.erl ${project_name} ${project_dir} 2>/de
 
 sed -i -e "s#${localdir}#${SERVICE_PREFIX}#g" rel/${project_name}/releases/RELEASES
 prepare_redhat ${SERVICE_PREFIX}
-fpm -s dir ${FPMOPTS} \
+fpm -s dir -t rpm
+    --vendor="${VENDOR}"
+    --license="${LICENSE}"
+    --epoch=${epoch}
     -n ${project_name} \
     --description="${project_name} service (${commit_hash})" \
     -v ${relvsn} \

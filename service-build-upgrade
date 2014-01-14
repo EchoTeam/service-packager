@@ -81,8 +81,6 @@ make target
 build_config="${project_dir}/rel/${project_name}/build.config"
 [ -r "${build_config}" ] && source "${build_config}"
 
-FPMOPTS="-t rpm --vendor=\"${VENDOR}\" --license=\"${LICENSE}\" --epoch=${epoch}"
-
 relvsn=`${INSTALL_DIR}/internals/relvsn.erl ${project_name} ${project_dir} 2>/dev/null || :`
 [ -z "${relvsn}" ] && abort "Release version not found"
 
@@ -95,7 +93,11 @@ tmp=/tmp/$runner.$$
 rm -rf ${tmp}
 mkdir -p ${tmp}/${project_name}/releases
 mv rel/${project_name}_${relvsn}.tar.gz ${tmp}/${project_name}/releases
-fpm -s dir ${FPMOPTS}  -n ${project_name}_upg_${prev_relvsn}_to_${relvsn} \
+fpm -s dir -t rpm
+    --vendor="${VENDOR}"
+    --license="${LICENSE}"
+    --epoch=${epoch}
+    -n ${project_name}_upg_${prev_relvsn}_to_${relvsn} \
     --description="${project_name} service upgrade package from version ${prev_relvsn} to ${relvsn} (${commit_hash})" \
     -v ${relvsn} \
     --rpm-user="${SERVICE_OWNER}" \

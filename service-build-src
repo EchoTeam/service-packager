@@ -65,8 +65,6 @@ else
     [ -r "${build_config}" ] && source "${build_config}"
 fi
 
-FPMOPTS="-t rpm --vendor=\"${VENDOR}\" --license=\"${LICENSE}\" --epoch=${epoch}"
-
 relvsn=`${INSTALL_DIR}/internals/relvsn.erl ${project_name} ${project_dir} 2>/dev/null || :`
 [ -z "${relvsn}" ] && abort "Release version not found"
 
@@ -75,7 +73,11 @@ make clean
 # We should include .git directory in the rpm
 # since rebar's {vsn, git} use this information
 tar cvf src.tar  --exclude="rel/${project_name}*" --exclude="*.beam" --exclude="*.rpm" .
-fpm -s tar ${FPMOPTS} -n ${project_name}_src -a all \
+fpm -s tar -t rpm
+    --vendor="${VENDOR}"
+    --license="${LICENSE}"
+    --epoch=${epoch}
+    -n ${project_name}_src -a all \
     --description="${project_name} service sources ${commit_hash}"\
     -v ${relvsn} \
     --rpm-user="${SERVICE_OWNER}" \
