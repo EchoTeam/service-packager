@@ -62,6 +62,7 @@ cookie="${project_name}_cookie"
 commit_hash=`git log -n 1 --format="%H"`
 
 function prepare_redhat {
+  prefix=$1
   redhat=rel/${project_name}/bin/${project_name}.redhat
   template=${INSTALL_DIR}/rpm/templates/service.redhat
   if [ -f $redhat ]; then   
@@ -70,6 +71,7 @@ function prepare_redhat {
   else
       cp $template $redhat || abort "Cannot generate $redhat"
       sed -i -e "s#{{name}}#${project_name}#g" $redhat
+      sed -i -e "s#{{prefix}}#${prefix}#g" $redhat
   fi
 }
 
@@ -93,7 +95,7 @@ relvsn=`${INSTALL_DIR}/internals/relvsn.erl ${project_name} ${project_dir} 2>/de
 [ -z "${relvsn}" ] && abort "Release version not found"
 
 sed -i -e "s#${localdir}#${SERVICE_PREFIX}#g" rel/${project_name}/releases/RELEASES
-prepare_redhat
+prepare_redhat ${SERVICE_PREFIX}
 fpm -s dir ${FPMOPTS} \
     -n ${project_name} \
     --description="${project_name} service (${commit_hash})" \

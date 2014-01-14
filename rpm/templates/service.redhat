@@ -8,16 +8,16 @@
 . /etc/rc.d/init.d/functions
 
 NAME={{name}}
-#PREFIX={{prefix}} # TODO
+PREFIX={{prefix}}
 
 #check for script,config, and data dirs
-[ -x /usr/local/lib/${NAME}/bin/${NAME} ] || exit 0
+[ -x ${PREFIX}/${NAME}/bin/${NAME} ] || exit 0
 
 RETVAL=0
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="$NAME as standaloone service"
-DAEMON=/usr/local/lib/${NAME}/bin/${NAME}
+DAEMON=${PREFIX}/${NAME}/bin/${NAME}
 
 
 start() {
