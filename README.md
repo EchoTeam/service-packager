@@ -3,7 +3,7 @@ service-packager
 
 A set of scripts to package Erlang service.
 
-Compatible with [Erlang service framework](https://github.com/EchoTeam/rebar-templates#creating-erlangotp-service-layout).
+Compatible with [Erlang service layout](https://github.com/EchoTeam/rebar-templates#creating-erlangotp-service-layout).
 
 ## service-build-target
 
