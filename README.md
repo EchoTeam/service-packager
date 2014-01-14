@@ -10,11 +10,11 @@ Compatible with [Erlang service layout](https://github.com/EchoTeam/rebar-templa
     Generates a target package from a project code base.
     Should be run in the root directory of the project code base.
     The project must provide the following command:
-
+    
         make target
-        Builds an Erlang target system.
-        service-build-target assumes that the target files
-        are placed in rel/<project-name>/ directory.
+            Builds an Erlang target system.
+            service-build-target assumes that the target files
+            are placed in rel/<project-name>/ directory.
 
     service-build-target can read rel/<project-name>/build.config if provided.
     build.config is just a set of shell variables.
@@ -52,16 +52,16 @@ Compatible with [Erlang service layout](https://github.com/EchoTeam/rebar-templa
     The project must provide the following commands:
 
         make target
-        Builds an Erlang target system.
-        service-build-upgrade assumes that the target files
-        are placed in rel/<project-name>/ directory.
+            Builds an Erlang target system.
+            service-build-upgrade assumes that the target files
+            are placed in rel/<project-name>/ directory.
 
         make generate-upgrade previous_release=<path-to-prev-release>
-        Builds an upgrade Erlang package against what is
-        in <path-to-prev-release> directory.
-        <path-to-prev-release> must be relative to "rel/" directory.
-        service-build-upgrade assumes that the upgrade files
-        are placed into rel/*.tar.gz archive.
+            Builds an upgrade Erlang package against what is
+            in <path-to-prev-release> directory.
+            <path-to-prev-release> must be relative to "rel/" directory.
+            service-build-upgrade assumes that the upgrade files
+            are placed into rel/*.tar.gz archive.
 
     service-build-upgrade can read rel/<project-name>/build.config if provided.
     build.config is just a set of shell variables.
@@ -96,9 +96,9 @@ Compatible with [Erlang service layout](https://github.com/EchoTeam/rebar-templa
     The project must provide the following commands:
 
         make target
-        Builds an Erlang target system.
-        service-build-src assumes that the target files
-        are placed in rel/<project-name>/ directory.
+            Builds an Erlang target system.
+            service-build-src assumes that the target files
+            are placed in rel/<project-name>/ directory.
 
         make clean
             Clean the project code base from binaries.
