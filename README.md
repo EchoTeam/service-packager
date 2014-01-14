@@ -5,24 +5,18 @@ A set of scripts to package Erlang service into RPM.
 
 Compatible with [Erlang service layout](https://github.com/EchoTeam/rebar-templates#creating-erlangotp-service-layout).
 
-### service-build-target
+## Build scripts
 
-Generates a target package from a project code base.
-Run the script without arguments for more information.
-        
-### service-build-upgrade
+ * `service-build-target` - generates a target package from a project code base.
+ * `service-build-upgrade` - generates an upgrade package from a project code base.
+ * `service-build-src` - generates a source package from a project code base.
 
-Generates an upgrade package from a project code base.
-Run the script without arguments for more information.
-
-### service-build-src
-
-Generates a source package from a project code base.
-Run the script without arguments for more information.
+Run the scripts without arguments for more information.
 
 ## Installation
 
+    gem install fpm
     git clone git@github.com:EchoTeam/service-packager.git
     cd service-packager
     make rpm
-    sudo yum localinstall echo-service-packager.rpm
+    yum localinstall echo-service-packager.rpm
