@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# vim: set ts=4 sts=4 sw=4 et:
+
+set -e
+
+INSTALL_DIR=$(cd ${0%/*} && pwd)
+source ${INSTALL_DIR}/internals/bootstrap.sh
+
+function usage {
+    cat <<EOT
+Generates an upgrade package from a project code base.
+Should be run in the root directory of the project code base.
+The project must provide the following command:
+
+    make target
+       Builds an Erlang target system.
+       $runner assumes that the target files
+       are placed in rel/<project-name>/ directory.
+
+    make generate-upgrade previous_release=<path-to-prev-release>
+       Builds an upgrade Erlang package against what is
+       in <path-to-prev-release> directory.
+       <path-to-prev-release> must be relative to "rel/" directory.
+       $runner assumes that the upgrade files
+       are placed into rel/*.tar.gz archive.
+
+$runner can read rel/<project-name>/build.config if provided.
+build.config is just a set of shell variables.
+Currently supported variables:
+
+    FPM_EXT_OPTS - extra options for fpm
+        Default: ""
+        Example: "-d perl"
+
+    SERVICE_OWNER - a user under which the service will be running
+        Default: <project-name>
+
+    SERVICE_PREFIX - a path prefix of a service files location
+        Default: /usr/local/lib
+
+    VENDOR - vendor field for the rpm package
+        Default: ""
+
+    LICENSE - license field for the rpm package
+        Default: ""
+
+Usage:
+    $runner <project-name> <target-rpm>
+
+    <target-rpm>    A target package against which to generate the upgrade.
+
+EOT
+    [ -z "$*" ] || echo "$runner: $*"
+    exit 2
+}
+
+project_dir=`pwd`
+project_name="$1"
+target_rpm="$2"
+[ -n "${project_name}" ] || usage "Project name unspecified"
+[ -n "$target_rpm" ] || usage "Target rpm unspecified" 
+[ -r "$target_rpm" ] || abort "$target_rpm is not readable"
+
+commit_hash=`git log -n 1 --format="%H"`
+epoch=`date +%s`
+
+# Default build params:
+FPM_EXT_OPTS=""
+SERVICE_OWNER=${project_name}
+SERVICE_PREFIX=/usr/local/lib
+VENDOR=""
+LICENSE=""
+
+target_rpm_dir=$(cd $(dirname ${target_rpm}) && pwd)
+target_rpm=`echo ${target_rpm_dir}/$(basename ${target_rpm})`
+
+prev_relvsn=`rpm -qp --qf "%{VERSION}" ${target_rpm}`
+
+make target
+
+build_config="${project_dir}/rel/${project_name}/build.config"
+[ -r "${build_config}" ] && source "${build_config}"
+
+FPMOPTS="-t rpm --vendor=\"${VENDOR}\" --license=\"${LICENSE}\" --epoch=${epoch}"
+
+relvsn=`${INSTALL_DIR}/internals/relvsn.erl ${project_name} ${project_dir} 2>/dev/null || :`
+[ -z "${relvsn}" ] && abort "Release version not found"
+
+rm -rf rel/${SERVICE_PREFIX}
+(cd rel && rpm2cpio ${target_rpm} | cpio -idmV)
+
+make generate-upgrade previous_release=./${SERVICE_PREFIX}/${project_name}
+
+tmp=/tmp/$runner.$$
+rm -rf ${tmp}
+mkdir -p ${tmp}/${project_name}/releases
+mv rel/${project_name}_${relvsn}.tar.gz ${tmp}/${project_name}/releases
+fpm -s dir ${FPMOPTS}  -n ${project_name}_upg_${prev_relvsn}_to_${relvsn} \
+    --description="${project_name} service upgrade package from version ${prev_relvsn} to ${relvsn} (${commit_hash})" \
+    -v ${relvsn} \
+    --rpm-user="${SERVICE_OWNER}" \
+    --rpm-group="${SERVICE_OWNER}" \
+    --template-scripts --template-value="prev=${prev_relvsn}" \
+    --template-value="original_name=${project_name}" \
+    --after-install=${INSTALL_DIR}/rpm/upgrade/POSTIN    --after-remove=${INSTALL_DIR}/rpm/upgrade/POSTUN  \
+    --before-install=${INSTALL_DIR}/rpm/upgrade/ALIVE  --before-remove=${INSTALL_DIR}/rpm/upgrade/ALIVE \
+    --depends="${project_name} >= ${prev_relvsn}" --provides=${project_name}_${relvsn} \
+    --prefix=${SERVICE_PREFIX} \
+    ${FPM_EXT_OPTS} \
+    -C ${tmp} \
+    ${project_name}
