@@ -93,10 +93,10 @@ tmp=/tmp/$runner.$$
 rm -rf ${tmp}
 mkdir -p ${tmp}/${project_name}/releases
 mv rel/${project_name}_${relvsn}.tar.gz ${tmp}/${project_name}/releases
-fpm -s dir -t rpm
-    --vendor="${VENDOR}"
-    --license="${LICENSE}"
-    --epoch=${epoch}
+fpm -s dir -t rpm \
+    --vendor="${VENDOR}" \
+    --license="${LICENSE}" \
+    --epoch=${epoch} \
     -n ${project_name}_upg_${prev_relvsn}_to_${relvsn} \
     --description="${project_name} service upgrade package from version ${prev_relvsn} to ${relvsn} (${commit_hash})" \
     -v ${relvsn} \

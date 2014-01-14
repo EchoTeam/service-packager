@@ -73,10 +73,10 @@ make clean
 # We should include .git directory in the rpm
 # since rebar's {vsn, git} use this information
 tar cvf src.tar  --exclude="rel/${project_name}*" --exclude="*.beam" --exclude="*.rpm" .
-fpm -s tar -t rpm
-    --vendor="${VENDOR}"
-    --license="${LICENSE}"
-    --epoch=${epoch}
+fpm -s tar -t rpm \
+    --vendor="${VENDOR}" \
+    --license="${LICENSE}" \
+    --epoch=${epoch} \
     -n ${project_name}_src -a all \
     --description="${project_name} service sources ${commit_hash}"\
     -v ${relvsn} \

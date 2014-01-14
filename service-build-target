@@ -95,10 +95,10 @@ relvsn=`${INSTALL_DIR}/internals/relvsn.erl ${project_name} ${project_dir} 2>/de
 
 sed -i -e "s#${localdir}#${SERVICE_PREFIX}#g" rel/${project_name}/releases/RELEASES
 prepare_redhat ${SERVICE_PREFIX}
-fpm -s dir -t rpm
-    --vendor="${VENDOR}"
-    --license="${LICENSE}"
-    --epoch=${epoch}
+fpm -s dir -t rpm \
+    --vendor="${VENDOR}" \
+    --license="${LICENSE}" \
+    --epoch=${epoch} \
     -n ${project_name} \
     --description="${project_name} service (${commit_hash})" \
     -v ${relvsn} \
