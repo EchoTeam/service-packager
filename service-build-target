@@ -108,6 +108,7 @@ fpm -s dir ${FPMOPTS} \
     --template-value="owner=${SERVICE_OWNER}" \
     --template-value="log_dir=${SERVICE_LOG_DIR}" \
     --template-value="config_dir=${SERVICE_CONFIG_DIR}" \
+    --template-value="prefix=${SERVICE_PREFIX}" \
     --before-install=${INSTALL_DIR}/rpm/target/PREIN \
     --after-install=${INSTALL_DIR}/rpm/target/POSTIN \
     --before-remove=${INSTALL_DIR}/rpm/target/PREUN \

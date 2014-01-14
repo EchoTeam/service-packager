@@ -102,6 +102,7 @@ fpm -s dir ${FPMOPTS}  -n ${project_name}_upg_${prev_relvsn}_to_${relvsn} \
     --rpm-group="${SERVICE_OWNER}" \
     --template-scripts --template-value="prev=${prev_relvsn}" \
     --template-value="original_name=${project_name}" \
+    --template-value="prefix=${SERVICE_PREFIX}" \
     --after-install=${INSTALL_DIR}/rpm/upgrade/POSTIN    --after-remove=${INSTALL_DIR}/rpm/upgrade/POSTUN  \
     --before-install=${INSTALL_DIR}/rpm/upgrade/ALIVE  --before-remove=${INSTALL_DIR}/rpm/upgrade/ALIVE \
     --depends="${project_name} >= ${prev_relvsn}" --provides=${project_name}_${relvsn} \

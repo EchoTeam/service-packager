@@ -1,3 +1,3 @@
 /usr/sbin/groupadd -r <%= owner %> >/dev/null 2>&1 || :
-/usr/sbin/useradd -M -N -g <%= owner %> -r -d /usr/local/lib/<%= name %>  -s /bin/bash \
+/usr/sbin/useradd -M -N -g <%= owner %> -r -d <%= prefix %>/<%= name %>  -s /bin/bash \
 	-c "<%= name %> service"  <%= owner %> >/dev/null 2>&1 || :
