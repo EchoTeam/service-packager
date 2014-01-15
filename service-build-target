@@ -78,7 +78,7 @@ function prepare_redhat {
 # Default build params:
 FPM_EXT_OPTS=""
 SERVICE_OWNER=${project_name}
-SERVICE_LOG_DIR="var/log/${project_name}"
+SERVICE_LOG_DIR="/var/log/${project_name}"
 SERVICE_CONFIG_DIR="/etc/${project_name}"
 SERVICE_PREFIX=/usr/local/lib
 VENDOR=""
