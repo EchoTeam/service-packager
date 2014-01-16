@@ -42,7 +42,6 @@ fpm:
 		-d grep -d gawk -d sed -d rpm -d git \
 		-d ruby -d erlang \
 		-d libffi-devel -d rpm-build \
-		--before-install=${INSTALL_DIR}/rpm/service-packager/PREIN \
 		--prefix=${prefix} \
 		--vendor=${vendor} \
 		--license=${license} \
