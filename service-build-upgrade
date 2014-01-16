@@ -68,8 +68,8 @@ epoch=`date +%s`
 FPM_EXT_OPTS=""
 SERVICE_OWNER=${project_name}
 SERVICE_PREFIX=/usr/local/lib
-VENDOR=""
-LICENSE=""
+VENDOR="Vendor"
+LICENSE="License"
 
 target_rpm_dir=$(cd $(dirname ${target_rpm}) && pwd)
 target_rpm=`echo ${target_rpm_dir}/$(basename ${target_rpm})`

@@ -54,8 +54,8 @@ commit_hash=`git log -n 1 --format="%H"`
 # Default build params:
 SERVICE_OWNER=${project_name}
 SERVICE_PREFIX=/usr/local/lib
-VENDOR=""
-LICENSE=""
+VENDOR="Vendor"
+LICENSE="License"
 
 build_config="${project_dir}/rel/${project_name}/build.config"
 if [ -r "${build_config}" ]; then

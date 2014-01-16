@@ -81,8 +81,8 @@ SERVICE_OWNER=${project_name}
 SERVICE_LOG_DIR="/var/log/${project_name}"
 SERVICE_CONFIG_DIR="/etc/${project_name}"
 SERVICE_PREFIX=/usr/local/lib
-VENDOR=""
-LICENSE=""
+VENDOR="Vendor"
+LICENSE="License"
 
 make target
 build_config="${project_dir}/rel/${project_name}/build.config"
