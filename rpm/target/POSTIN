@@ -15,6 +15,7 @@ fi
 echo -n <%= cookie %> ><%= prefix %>/<%= name %>/.erlang.cookie
 /bin/chown <%= owner %>:<%= owner %> <%= prefix %>/<%= name %>/.erlang.cookie
 /bin/chmod 0400 <%= prefix %>/<%= name %>/.erlang.cookie
+/bin/chmod 0755 <%= prefix %>/<%= name %>/bin/<%= name %>
 
 if [ -n "<%= config_dir %>" ]; then
     /bin/mkdir -p <%= config_dir %>
