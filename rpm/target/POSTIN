@@ -20,9 +20,11 @@ fi
 /bin/cp -n <%= prefix %>/<%= name %>/etc/* <%= config_dir %>/
 
 # .erlang.cookie
-echo -n <%= cookie %> ><%= config_dir %>/.erlang.cookie
-/bin/chown <%= owner %>:<%= owner %> <%= config_dir %>/.erlang.cookie
-/bin/chmod 0400 <%= config_dir %>/.erlang.cookie
+if [ ! -f <%= config_dir %>/.erlang.cookie ]; then
+    echo -n <%= cookie %> ><%= config_dir %>/.erlang.cookie
+    /bin/chown <%= owner %>:<%= owner %> <%= config_dir %>/.erlang.cookie
+    /bin/chmod 0400 <%= config_dir %>/.erlang.cookie
+fi
 /bin/ln -s <%= config_dir %>/.erlang.cookie <%= prefix %>/<%= name %>/.erlang.cookie
 
 
