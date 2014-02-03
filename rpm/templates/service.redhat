@@ -32,11 +32,6 @@ start() {
     [ $(id -u) -eq 0 ] && touch /var/lock/subsys/$NAME
     [ $RETVAL -eq 0 ]
     echo
-    COOKIE_FILE=${PREFIX}/${NAME}/.erlang.cookie
-    if [ `cat $COOKIE_FILE` == "${NAME}_cookie" ]; then
-        echo "WARNING: Started with default erlang cookie."
-        echo "Consider changing $COOKIE_FILE"
-    fi
     return $RETVAL
 }
 

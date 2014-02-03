@@ -11,16 +11,19 @@ fi
 /bin/chmod 0755 <%= log_dir %>
 /bin/chown <%= owner %>:<%= owner %> -R <%= log_dir %>
 
+# binaries
 /bin/chown <%= owner %>:<%= owner %> -R <%= prefix %>/<%= name %>
-echo -n <%= cookie %> ><%= prefix %>/<%= name %>/.erlang.cookie
-/bin/chown <%= owner %>:<%= owner %> <%= prefix %>/<%= name %>/.erlang.cookie
-/bin/chmod 0400 <%= prefix %>/<%= name %>/.erlang.cookie
 /bin/chmod 0755 <%= prefix %>/<%= name %>/bin/<%= name %>
 
-if [ -n "<%= config_dir %>" ]; then
-    /bin/mkdir -p <%= config_dir %>
-    /bin/cp -n <%= prefix %>/<%= name %>/etc/* <%= config_dir %>/
-fi
+# configs
+/bin/mkdir -p <%= config_dir %>
+/bin/cp -n <%= prefix %>/<%= name %>/etc/* <%= config_dir %>/
+
+# .erlang.cookie
+echo -n <%= cookie %> ><%= config_dir %>/.erlang.cookie
+/bin/chown <%= owner %>:<%= owner %> <%= config_dir %>/.erlang.cookie
+/bin/chmod 0400 <%= config_dir %>/.erlang.cookie
+/bin/ln -s <%= config_dir %>/.erlang.cookie <%= prefix %>/<%= name %>/.erlang.cookie
 
 
 # Handle upgrading from SysV initscript to native systemd unit.
