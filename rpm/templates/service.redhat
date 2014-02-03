@@ -23,7 +23,7 @@ DAEMON=${PREFIX}/${NAME}/bin/${NAME}
 start() {
     #Check if service is running
     RETVAL=`sudo -H -u $NAME  -i $DAEMON ping`
-    [ "$RETVAL" == "pong" ] && echo "$NAME is already running" && return 1
+    [ "$RETVAL" == "pong" ] && echo "$NAME is already running" && return 0
 
     # Start daemons.
     echo -n $"Starting $NAME: "
