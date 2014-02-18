@@ -103,13 +103,16 @@ case "$1" in
       reload
     ;;
     ping)
-      sudo -H -u $NAME -i $DAEMON ping || exit $? 
+      sudo -H -u $NAME -i $DAEMON ping || exit $?
     ;;
     remsh)
       remsh  
     ;;
+    relvsn)
+      sudo -H -u $NAME -i $DAEMON relvsn || exit $?
+    ;;
     *)
-      echo $"Usage: $0 {start|stop|reload|restart|ping|remsh}"
+      echo $"Usage: $0 {start|stop|reload|restart|ping|remsh|relvsn}"
       exit 1
 esac
 
